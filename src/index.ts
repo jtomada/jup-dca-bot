@@ -103,7 +103,7 @@ const executeSwap = async ({
   try {
     // Prepare execute exchange
     const { execute } = await jupiter.exchange({
-      route,
+      routeInfo: route,
     });
 
     // Execute swap
