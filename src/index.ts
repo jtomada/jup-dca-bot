@@ -7,40 +7,10 @@ import {
   INPUT_MINT_ADDRESS,
   OUTPUT_MINT_ADDRESS,
   SOLANA_RPC_ENDPOINT,
+  SWAP_INTERVAL_MS,
   Token,
   USER_KEYPAIR,
 } from "./constants";
-
-const getPossiblePairsTokenInfo = ({
-  tokens,
-  routeMap,
-  inputToken,
-}: {
-  tokens: Token[];
-  routeMap: Map<string, string[]>;
-  inputToken?: Token;
-}) => {
-  try {
-    if (!inputToken) {
-      return {};
-    }
-
-    const possiblePairs = inputToken
-      ? routeMap.get(inputToken.address) || []
-      : []; // return an array of token mints that can be swapped with SOL
-    const possiblePairsTokenInfo: { [key: string]: Token | undefined } = {};
-    possiblePairs.forEach((address) => {
-      possiblePairsTokenInfo[address] = tokens.find((t) => {
-        return t.address == address;
-      });
-    });
-    // Perform your conditionals here to use other outputToken
-    // const alternativeOutputToken = possiblePairsTokenInfo[USDT_MINT_ADDRESS]
-    return possiblePairsTokenInfo;
-  } catch (error) {
-    throw error;
-  }
-};
 
 const getRoutes = async ({
   jupiter,
@@ -125,6 +95,10 @@ const executeSwap = async ({
   }
 };
 
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 const main = async () => {
   try {
     const connection = new Connection(SOLANA_RPC_ENDPOINT); // Setup Solana RPC connection
@@ -137,30 +111,23 @@ const main = async () => {
       user: USER_KEYPAIR, // or public key
     });
 
-    //  Get routeMap, which maps each tokenMint and their respective tokenMints that are swappable
-    const routeMap = jupiter.getRouteMap();
-
     // If you know which input/output pair you want
     const inputToken = tokens.find((t) => t.address == INPUT_MINT_ADDRESS); // USDC Mint Info
     const outputToken = tokens.find((t) => t.address == OUTPUT_MINT_ADDRESS); // USDT Mint Info
 
-    // Alternatively, find all possible outputToken based on your inputToken
-    const possiblePairsTokenInfo = await getPossiblePairsTokenInfo({
-      tokens,
-      routeMap,
-      inputToken,
-    });
-
-    const routes = await getRoutes({
-      jupiter,
-      inputToken,
-      outputToken,
-      inputAmount: .01, // 1 unit in UI
-      slippage: 1, // 1% slippage
-    });
-
-    // Routes are sorted based on outputAmount, so ideally the first route is the best.
-    await executeSwap({ jupiter, route: routes!.routesInfos[0] });
+    while (true) {
+      /* code to wait on goes here (sync or async) */    
+      const routes = await getRoutes({
+        jupiter,
+        inputToken,
+        outputToken,
+        inputAmount: .01, // 1 unit in UI
+        slippage: 1, // % slippage
+      });
+      // Routes are sorted based on outputAmount, so ideally the first route is the best.
+      await executeSwap({ jupiter, route: routes!.routesInfos[0] });
+      await delay(SWAP_INTERVAL_MS);
+    }
   } catch (error) {
     console.log({ error });
   }

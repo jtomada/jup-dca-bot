@@ -30,6 +30,8 @@ export const OUTPUT_MINT_ADDRESS =
     ? "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt" // SRM
     : "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"; // USDT
 
+export const SWAP_INTERVAL_MS = 5000;
+
 // Interface
 export interface Token {
   chainId: number; // 101,
