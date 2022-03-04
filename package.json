@@ -1,12 +1,13 @@
 {
-  "name": "jupiter-core-example",
+  "name": "jup-dca-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "dollar cost averaging bot",
   "source": "src/index.ts",
-  "main": "dist/main.js",
+  "main": "src/index.ts",
   "module": "dist/module.js",
   "types": "dist/types.d.ts",
   "scripts": {
+    "dev": "TS_NODE=true NODE_OPTIONS=\"--loader ts-node/esm --experimental-specifier-resolution=node\" node .",
     "start": "ts-node ./src/index.ts"
   },
   "keywords": [],
@@ -15,7 +16,6 @@
   "dependencies": {
     "@jup-ag/core": "^1.0.0-beta.16",
     "@solana/wallet-adapter-base": "^0.7.1",
-    "@solana/web3.js": "^1.31.0",
     "@types/bs58": "^4.0.1",
     "@types/isomorphic-fetch": "^0.0.35",
     "bs58": "^4.0.1",
@@ -25,9 +25,12 @@
     "ts-node": "^10.4.0"
   },
   "devDependencies": {
+    "@solana/web3.js": "^1.36.0",
+    "bree": "^7.2.0",
     "typescript": "^4.5.3"
   },
   "resolutions": {
     "@solana/buffer-layout": "4.0.0"
-  }
+  },
+  "type": "module"
 }
