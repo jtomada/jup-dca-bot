@@ -17,7 +17,7 @@ WALLET_PRIVATE_KEY=abc123def456
 ```
 Create your own `dcaconfig.ts`. See `dcaconfig-example.ts` for a template. 
 
-To see example cron expressions, check out [cronotab guru](https://crontab.guru/).
+To see example cron expressions, check out [crontab.guru](https://crontab.guru/).
 ## Run
 ```
 yarn start
