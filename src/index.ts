@@ -4,12 +4,11 @@ import { PublicKey, Connection } from "@solana/web3.js";
 import * as cron from "node-cron";
 import {
   ENV,
-  INPUT_MINT_ADDRESS,
-  OUTPUT_MINT_ADDRESS,
   SOLANA_RPC_ENDPOINT,
   Token,
   USER_KEYPAIR,
 } from "./constants";
+import { dcaconfig } from './dcaconfig'
 
 const jupiterSwap = async ({
   jupiter,
@@ -87,27 +86,32 @@ const main = async () => {
     });
 
     // Fetch token list from Jupiter API
-    const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json(); 
+    const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json();
 
-    // If you know which input/output pair you want
-    const inputToken = tokens.find((t) => t.address == INPUT_MINT_ADDRESS); // USDC Mint Info
-    const outputToken = tokens.find((t) => t.address == OUTPUT_MINT_ADDRESS); // USDT Mint Info
+    const filteredJobs = dcaconfig.filter(dcajob => {
+      return cron.validate(dcajob.cron);
+    });
 
-    // Create cron job
+    console.log("Valid jobs to be scheduled: ", filteredJobs.map(job => {
+      return job.name;
+    }));
 
-    // Validate cron job
+    const scheduledJobs = filteredJobs.map(dcajob => {
+      const inputToken = tokens.find((t) => t.address == dcajob.inputMint);
+      const outputToken = tokens.find((t) => t.address == dcajob.outputMint);
 
-    const task = cron.schedule('*/2 * * * *', async () => {
-      console.log('SWAPPING @!!!!!');
-      const routes = await jupiterSwap({
-        jupiter,
-        inputToken,
-        outputToken,
-        inputAmount: .01,
-        slippage: 1, // % slippage
+      return cron.schedule(dcajob.cron, async () => {
+        console.log('SWAPPING @!!!!!');
+        const routes = await jupiterSwap({
+          jupiter,
+          inputToken,
+          outputToken,
+          inputAmount: dcajob.amount,
+          slippage: dcajob.slippage, // % slippage
+        });
       });
     });
-    
+
     console.log('started!!!');
   } catch (error) {
     console.log({ error });
