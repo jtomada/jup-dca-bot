@@ -1,6 +1,5 @@
-import { Cluster } from "@solana/web3.js";
+import { Cluster, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
-import { Keypair } from "@solana/web3.js";
 
 import 'dotenv/config'
 
@@ -20,16 +19,6 @@ export const WALLET_PRIVATE_KEY =
 export const USER_PRIVATE_KEY = bs58.decode(WALLET_PRIVATE_KEY);
 export const USER_KEYPAIR = Keypair.fromSecretKey(USER_PRIVATE_KEY);
 
-// Token Mints
-export const INPUT_MINT_ADDRESS =
-  ENV === "devnet"
-    ? "So11111111111111111111111111111111111111112" // SOL
-    : "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"; // USDC
-export const OUTPUT_MINT_ADDRESS =
-  ENV === "devnet"
-    ? "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt" // SRM
-    : "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"; // USDT
-
 // Interface
 export interface Token {
   chainId: number; // 101,
@@ -39,4 +28,13 @@ export interface Token {
   decimals: number; // 9,
   logoURI: string; // 'https://i.ibb.co/pKTWrwP/true.jpg',
   tags: string[]; // [ 'utility-token', 'capital-token' ]
+}
+
+export interface DcaConfig {
+  name?: string;
+  inputMint: string;
+  outputMint: string;
+  amount: number;
+  slippage: number;
+  cron: string;
 }
