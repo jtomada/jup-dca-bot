@@ -53,10 +53,16 @@ const jupiterSwap = async ({
         if (swapResult.error) {
           console.log(swapResult.error);
         } else {
-          console.log(
-            `${
-              swapResult.inputAmount / (10 ** inputToken.decimals)} ${inputToken.symbol} -> ${swapResult.outputAmount / (10 ** inputToken.decimals)} ${outputToken.symbol}: https://solscan.io/tx/${swapResult.txid}`
-            );
+          // trying to keep these on one line
+          process.stdout.write(
+            `${swapResult.inputAmount / (10 ** inputToken.decimals)} `
+          ); 
+          process.stdout.write(`${inputToken.symbol} -> `);
+          process.stdout.write(
+            `${swapResult.outputAmount / (10 ** inputToken.decimals)} `
+          );
+          process.stdout.write(`${outputToken.symbol} -> `);
+          console.log(`https://solscan.io/tx/${swapResult.txid}`);
         }
       } else {
         console.log("Error: Jupiter couldn't route.");
@@ -78,7 +84,10 @@ const main = async () => {
     // Fetch token list from Jupiter API
     const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json();
 
-    console.log("Validating dcaconfig. Jobs may not be included if the cron expression is invalid or chosen token strings do not exist in the MINT_ADDRESSES object.");
+    console.log("Validating dcaconfig.");
+    console.log("A job may be excluded because:");
+    console.log("- invalid cron expression");
+    console.log("- inputToken or outputToken does not exist in MINT_ADDRESSES");
     const filteredJobs = dcaconfig.filter(job => {
       return (cron.validate(job.cron) 
         && job.inputToken in MINT_ADDRESSES 
