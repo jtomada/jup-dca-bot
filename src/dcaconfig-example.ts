@@ -13,14 +13,14 @@ export const dcaconfig: DcaConfig[] = [
         outputToken: "USDC",
         amount: 0.01,
         slippage: 1,
-        cron: "*/2 * * * *" // every t2 minutes
+        cron: "*/2 * * * *" // every 2 minutes
     },
     {
         inputToken: "USDC",
         outputToken: "SOL",
         amount: 0.01,
         slippage: 1,
-        cron: "*0 8 * * 0-6" // 8 AM everyday
+        cron: "0 8 * * 0-6" // 8 AM everyday
     },
     {
         inputToken: "REKT", // invalid mint

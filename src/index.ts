@@ -55,7 +55,7 @@ const jupiterSwap = async ({
         } else {
           console.log(
             `${
-              swapResult.inputAmount / (10 ** inputToken.decimals)} ${inputToken.symbol} -> ${swapResult.outputAmount / (10 ** inputToken.decimals)} ${outputToken.symbol} - https://solscan.io/tx/${swapResult.txid}`
+              swapResult.inputAmount / (10 ** inputToken.decimals)} ${inputToken.symbol} -> ${swapResult.outputAmount / (10 ** inputToken.decimals)} ${outputToken.symbol}: https://solscan.io/tx/${swapResult.txid}`
             );
         }
       } else {
