@@ -19,6 +19,14 @@ export const WALLET_PRIVATE_KEY =
 export const USER_PRIVATE_KEY = bs58.decode(WALLET_PRIVATE_KEY);
 export const USER_KEYPAIR = Keypair.fromSecretKey(USER_PRIVATE_KEY);
 
+// mainnet-beta mints only
+// for list, see: https://solscan.io/tokens
+export const MINT_ADDRESSES: { [key: string]: string } = {
+  "SOL": "So11111111111111111111111111111111111111112",
+  "USDC": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "USDT": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+};
+
 // Interface
 export interface Token {
   chainId: number; // 101,
@@ -32,8 +40,8 @@ export interface Token {
 
 export interface DcaConfig {
   name?: string;
-  inputMint: string;
-  outputMint: string;
+  inputToken: string;
+  outputToken: string;
   amount: number;
   slippage: number;
   cron: string;

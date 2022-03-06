@@ -2,19 +2,31 @@ import { DcaConfig } from './constants';
 
 export const dcaconfig: DcaConfig[] = [
     {
-        name: "USDC to USDT",
-        inputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
-        outputMint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", // USDT
+        inputToken: "USDC",
+        outputToken: "USDT",
         amount: 0.01,
         slippage: 1,
-        cron: "*/1 * * * *"
+        cron: "*/* * * * *" // every minute
     },
     {
-        name: "0.01 USDT -> USDC",
-        inputMint: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", // USDT
-        outputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC
+        inputToken: "USDT",
+        outputToken: "USDC",
         amount: 0.01,
         slippage: 1,
-        cron: "*/1 * * * *"
+        cron: "*/2 * * * *" // every t2 minutes
+    },
+    {
+        inputToken: "USDC",
+        outputToken: "SOL",
+        amount: 0.01,
+        slippage: 1,
+        cron: "*0 8 * * 0-6" // 8 AM everyday
+    },
+    {
+        inputToken: "REKT", // invalid mint
+        outputToken: "USDT",
+        amount: 0.01,
+        slippage: 1,
+        cron: "* * * * *"
     },
 ];
