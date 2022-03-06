@@ -4,6 +4,7 @@ import { PublicKey, Connection } from "@solana/web3.js";
 import * as cron from "node-cron";
 import {
   ENV,
+  MINT_ADDRESSES,
   SOLANA_RPC_ENDPOINT,
   Token,
   USER_KEYPAIR,
@@ -28,30 +29,20 @@ const jupiterSwap = async ({
           return null;
       }
 
-      console.log(
-      `Getting routes for ${inputAmount} ${inputToken.symbol} -> ${outputToken.symbol}...`
-      );
-      const inputAmountInSmallestUnits = inputToken
-      ? Math.round(inputAmount * 10 ** inputToken.decimals)
-      : 0;
-      const routes =
-      inputToken && outputToken
-          ? await jupiter.computeRoutes({
-              inputMint: new PublicKey(inputToken.address),
-              outputMint: new PublicKey(outputToken.address),
-              inputAmount: inputAmountInSmallestUnits, // raw input amount of tokens
-              slippage,
-              forceFetch: true,
-          })
-          : null;
+      const inputAmountInSmallestUnits = inputToken 
+        ? Math.round(inputAmount * 10 ** inputToken.decimals)
+        : 0;
+      const routes = inputToken && outputToken
+        ? await jupiter.computeRoutes({
+            inputMint: new PublicKey(inputToken.address),
+            outputMint: new PublicKey(outputToken.address),
+            inputAmount: inputAmountInSmallestUnits, // raw input amount of tokens
+            slippage,
+            forceFetch: true,
+        })
+        : null;
 
       if (routes && routes.routesInfos) {
-      console.log("Possible number of routes:", routes.routesInfos.length);
-      console.log(
-          "Best quote: ",
-          routes.routesInfos[0].outAmount / 10 ** outputToken.decimals,
-          `(${outputToken.symbol})`
-      );
         // Prepare execute exchange
         const { execute } = await jupiter.exchange({
           routeInfo: routes!.routesInfos[0],
@@ -61,15 +52,14 @@ const jupiterSwap = async ({
         const swapResult: any = await execute();
         if (swapResult.error) {
           console.log(swapResult.error);
-          return null;
         } else {
-          console.log(`https://explorer.solana.com/tx/${swapResult.txid}`);
           console.log(
-              `inputAmount=${swapResult.inputAmount} outputAmount=${swapResult.outputAmount}`
-          );
+            `${
+              swapResult.inputAmount / (10 ** inputToken.decimals)} ${inputToken.symbol} -> ${swapResult.outputAmount / (10 ** inputToken.decimals)} ${outputToken.symbol} - https://solscan.io/tx/${swapResult.txid}`
+            );
         }
       } else {
-        return null;
+        console.log("Error: Jupiter couldn't route.");
       }
   } catch (error) {
     throw error;
@@ -88,31 +78,37 @@ const main = async () => {
     // Fetch token list from Jupiter API
     const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json();
 
-    const filteredJobs = dcaconfig.filter(dcajob => {
-      return cron.validate(dcajob.cron);
+    console.log("Validating dcaconfig. Jobs may not be included if the cron expression is invalid or chosen token strings do not exist in the MINT_ADDRESSES object.");
+    const filteredJobs = dcaconfig.filter(job => {
+      return (cron.validate(job.cron) 
+        && job.inputToken in MINT_ADDRESSES 
+        && job.outputToken in MINT_ADDRESSES
+      );
     });
+    
+    console.log("Scheduling the following jobs: ");
+    filteredJobs.map(job => {
+      console.log(`${job.amount} ${job.inputToken} -> ${job.outputToken}. cron: ${job.cron}`);
+    });
+    
+    const scheduledJobs = filteredJobs.map(job => {
+      const inputToken = tokens.find((t) => 
+        t.address == MINT_ADDRESSES[job.inputToken]
+      );
+      const outputToken = tokens.find((t) => 
+        t.address == MINT_ADDRESSES[job.outputToken]
+      );
 
-    console.log("Valid jobs to be scheduled: ", filteredJobs.map(job => {
-      return job.name;
-    }));
-
-    const scheduledJobs = filteredJobs.map(dcajob => {
-      const inputToken = tokens.find((t) => t.address == dcajob.inputMint);
-      const outputToken = tokens.find((t) => t.address == dcajob.outputMint);
-
-      return cron.schedule(dcajob.cron, async () => {
-        console.log('SWAPPING @!!!!!');
-        const routes = await jupiterSwap({
+      return cron.schedule(job.cron, async () => {
+        await jupiterSwap({
           jupiter,
           inputToken,
           outputToken,
-          inputAmount: dcajob.amount,
-          slippage: dcajob.slippage, // % slippage
+          inputAmount: job.amount,
+          slippage: job.slippage, // % slippage
         });
       });
     });
-
-    console.log('started!!!');
   } catch (error) {
     console.log({ error });
   }
