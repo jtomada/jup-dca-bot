@@ -6,7 +6,7 @@ export const dcaconfig: DcaConfig[] = [
         outputToken: "USDT",
         amount: 0.01,
         slippage: 1,
-        cron: "*/* * * * *" // every minute
+        cron: "* * * * *" // every minute
     },
     {
         inputToken: "USDT",
