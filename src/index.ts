@@ -2,13 +2,8 @@ import fetch from "isomorphic-fetch";
 import { Jupiter, TOKEN_LIST_URL } from "@jup-ag/core";
 import { PublicKey, Connection } from "@solana/web3.js";
 import * as cron from "node-cron";
-import {
-  ENV,
-  MINT_ADDRESSES,
-  SOLANA_RPC_ENDPOINT,
-  Token,
-  USER_KEYPAIR,
-} from "./constants";
+import cronstrue from "cronstrue";
+import {Token, MINT_ADDRESSES, USER_KEYPAIR, SOLANA_RPC_ENDPOINT} from "./constants";
 import { dcaconfig } from './dcaconfig'
 
 const jupiterSwap = async ({
@@ -100,7 +95,7 @@ const main = async () => {
     
     console.log("Scheduling swaps:");
     filteredJobs.map(job => {
-      console.log(`${job.amount} ${job.inputToken} -> ${job.outputToken}. cron: ${job.cron}`);
+      console.log(`${job.amount} ${job.inputToken} for ${job.outputToken} ${cronstrue.toString(job.cron)}`);
     });
     
     filteredJobs.forEach(job => {
