@@ -5,6 +5,8 @@ This code was made to experiment and learn. It has not been thoroughly tested an
 
 Based on the [Jupiter Core Example](https://github.com/jup-ag/jupiter-core-example)
 
+![Jup DCA Bot Demo](img/demo.gif)
+
 ## Install
 ```
 yarn install
