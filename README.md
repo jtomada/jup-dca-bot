@@ -11,7 +11,7 @@ yarn install
 ```
 ## Configure
 1. Create an `.env` file at the project root. See `.env-example`. 
-Can be obtained from Phantom via Settings -> Export Private Key.
+Private key can be obtained from Phantom via Settings -> Export Private Key.
 2. Create your own `dcaconfig.ts`. See `dcaconfig-example.ts` for a template. 
 
 To see example cron expressions, check out [crontab.guru](https://crontab.guru/).
