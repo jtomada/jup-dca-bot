@@ -1,5 +1,5 @@
 import fetch from "isomorphic-fetch";
-import { Jupiter, RouteInfo, TOKEN_LIST_URL } from "@jup-ag/core";
+import { Jupiter, TOKEN_LIST_URL } from "@jup-ag/core";
 import { PublicKey, Connection } from "@solana/web3.js";
 import * as cron from "node-cron";
 import {
@@ -61,11 +61,11 @@ const jupiterSwap = async ({
           process.stdout.write(
             `${swapResult.outputAmount / (10 ** inputToken.decimals)} `
           );
-          process.stdout.write(`${outputToken.symbol} -> `);
+          process.stdout.write(`${outputToken.symbol}: `);
           console.log(`https://solscan.io/tx/${swapResult.txid}`);
         }
       } else {
-        console.log("Error: Jupiter couldn't route.");
+        console.log("Error during jupiter.computeRoutes().");
       }
   } catch (error) {
     throw error;
@@ -74,20 +74,23 @@ const jupiterSwap = async ({
 
 const main = async () => {
   try {
-    const connection = new Connection(SOLANA_RPC_ENDPOINT); // Setup Solana
+    console.log("Starting Jupiter DCA Bot");
+
+    const cluster = "mainnet-beta"; // Force mainnet, as this uses Jupiter which is not deployed on devnet/testnet
+    const connection = new Connection(SOLANA_RPC_ENDPOINT);
     const jupiter = await Jupiter.load({
         connection,
-        cluster: ENV,
-        user: USER_KEYPAIR, // or public key
+        cluster: cluster,
+        user: USER_KEYPAIR,
     });
 
     // Fetch token list from Jupiter API
-    const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[ENV])).json();
+    const tokens: Token[] = await (await fetch(TOKEN_LIST_URL[cluster])).json();
 
-    console.log("Validating dcaconfig.");
-    console.log("A job may be excluded because:");
+    console.log("Warning! dcaconfig entries may be excluded due to:");
     console.log("- invalid cron expression");
     console.log("- inputToken or outputToken does not exist in MINT_ADDRESSES");
+    console.log("Validating dcaconfig.ts ...");
     const filteredJobs = dcaconfig.filter(job => {
       return (cron.validate(job.cron) 
         && job.inputToken in MINT_ADDRESSES 
@@ -95,12 +98,12 @@ const main = async () => {
       );
     });
     
-    console.log("Scheduling the following jobs: ");
+    console.log("Scheduling swaps:");
     filteredJobs.map(job => {
       console.log(`${job.amount} ${job.inputToken} -> ${job.outputToken}. cron: ${job.cron}`);
     });
     
-    const scheduledJobs = filteredJobs.map(job => {
+    filteredJobs.forEach(job => {
       const inputToken = tokens.find((t) => 
         t.address == MINT_ADDRESSES[job.inputToken]
       );

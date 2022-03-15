@@ -1,7 +1,7 @@
 {
   "name": "jup-dca-bot",
-  "version": "1.0.0",
-  "description": "dollar cost averaging bot",
+  "version": "0.1.0",
+  "description": "Dollar cost averaging bot on Solana",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "module": "dist/module.js",
@@ -15,18 +15,18 @@
   "dependencies": {
     "@jup-ag/core": "^1.0.0-beta.16",
     "@solana/wallet-adapter-base": "^0.7.1",
+    "@solana/web3.js": "^1.36.0",
     "@types/bs58": "^4.0.1",
     "@types/isomorphic-fetch": "^0.0.35",
     "bs58": "^4.0.1",
     "dotenv": "^10.0.0",
     "isomorphic-fetch": "^3.0.0",
-    "node-fetch": "^3.1.0",
-    "ts-node": "^10.4.0"
+    "node-cron": "^3.0.0",
+    "node-fetch": "^3.1.0"
   },
   "devDependencies": {
-    "@solana/web3.js": "^1.36.0",
     "@types/node-cron": "^3.0.1",
-    "node-cron": "^3.0.0",
+    "ts-node": "^10.7.0",
     "typescript": "^4.5.3"
   },
   "resolutions": {

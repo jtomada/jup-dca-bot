@@ -10,20 +10,12 @@ Based on the [Jupiter Core Example](https://github.com/jup-ag/jupiter-core-examp
 yarn install
 ```
 ## Configure
-Create an `.env` file to store private info. Add the variables below.
-```
-CLUSTER=mainnet-beta
-WALLET_PRIVATE_KEY=abc123def456
-```
-Create your own `dcaconfig.ts`. See `dcaconfig-example.ts` for a template. 
+1. Create an `.env` file at the project root. See `.env-example`. 
+Can be obtained from Phantom via Settings -> Export Private Key.
+2. Create your own `dcaconfig.ts`. See `dcaconfig-example.ts` for a template. 
 
 To see example cron expressions, check out [crontab.guru](https://crontab.guru/).
 ## Run
 ```
 yarn start
-```
-## Development
-```
-yarn add --dev node-cron
-yarn add --dev @types/node-cron
 ```
