@@ -1,17 +1,8 @@
-import { Cluster, Keypair } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
-
 import 'dotenv/config'
 
-// Endpoints, connection
-export const ENV: Cluster = (process.env.CLUSTER as Cluster) || "mainnet-beta";
-
-// Sometimes, your RPC endpoint may reject you if you spam too many RPC calls. Sometimes, your PRC server
-// may have invalid cache and cause problems.
-export const SOLANA_RPC_ENDPOINT =
-  ENV === "devnet"
-    ? "https://api.devnet.solana.com"
-    : "https://ssc-dao.genesysgo.net";
+export const SOLANA_RPC_ENDPOINT: string = process.env.RPC_ENDPOINT!;
 
 // Wallets
 export const WALLET_PRIVATE_KEY =
