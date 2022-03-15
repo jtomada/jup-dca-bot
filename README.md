@@ -17,7 +17,11 @@ Private key can be obtained from Phantom via Settings -> Export Private Key.
 2. Create your own `dcaconfig.ts`. See `dcaconfig-example.ts` for a template. 
 
 To see example cron expressions, check out [crontab.guru](https://crontab.guru/).
+Note: the minimum interval is one minute.
 ## Run
 ```
 yarn start
 ```
+## Improvements
+- transaction retries. Not great to fail on swaps that may occur once-a-week or biweekly.
+- start and end dates.
